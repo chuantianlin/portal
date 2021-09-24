@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 from . forms import *
 from django.views import generic
-
+from youtubesearchpython import VideosSearch 
 
 def home(request):
     return render(request,'dashboard/home.html')
@@ -60,5 +60,54 @@ def HomeWork(request):
 def Homewor_Delete(request,pk=None):
      Homework.objects.get(id=pk).delete()
      return redirect("homework")
+def youtube(request):
+    if request.method=="POST":
+        form=Dashform(request.POST)
+        text=request.POST['text']
+        video=VideosSearch (text,limit=10)
+        result_list=[]
+        for i in video.result()['result']:
+            result_dict={
+                'input':text,
+                'title':i['title'],
+                'duration':i['duration'],
+                'thumbanils':i['thumbnails'][0]['url'],
+                'channel':i['channel']['name'],
+                'link':i['link'],
+                'views':i['viewCount']['short'],
+                'publishedtime':i['publishedTime']
+            }
+            desc=''
+            if i['descriptionSnippet']:
+                for j in i['descriptionSnippet']:
+                    desc+=j['text']
+            result_dict['description']=desc
+            result_list.append(result_dict)
+            context={
+                'form':form,   
+                'results':result_list
+            }
+        
 
-# Create your views here.
+        return render(request,"dashboard/youtube.html",context)
+
+    else:
+        form=Dashform()
+    context={'form':form}
+    return render(request,"dashboard/youtube.html",context)
+def todo(request):
+    form=Todoform(request.POST)
+    todo=Todo.objects.filter(user=request.user)
+    context={
+        'form':form,
+        'todos':todo
+    }
+    return render(request,"dashboard/todo.html",context)
+           
+
+     
+      
+   
+
+        
+
