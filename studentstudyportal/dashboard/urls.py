@@ -11,4 +11,7 @@ urlpatterns=[
     path('youtube/',views.youtube,name="youtube"),
     path('homework_delete/<int:pk>',views.Homewor_Delete,name="homework_delete"),
     path('todo/',views.todo,name="todo"),
+    path('todo_delete/<int:pk>',views.todo_delete,name="todo_delete"),
+    path('update_todo/<int:pk>',views.todo_update,name="update_todo"),
+    path('books/',views.book,name="books"),
 ]

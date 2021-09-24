@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from . forms import *
 from django.views import generic
 from youtubesearchpython import VideosSearch 
+import requests
 
 def home(request):
     return render(request,'dashboard/home.html')
@@ -96,15 +97,84 @@ def youtube(request):
     context={'form':form}
     return render(request,"dashboard/youtube.html",context)
 def todo(request):
-    form=Todoform(request.POST)
-    todo=Todo.objects.filter(user=request.user)
+    if request.method=='POST':
+        form=Todoform(request.POST)
+        if form.is_valid():
+            try:
+                finished=request.POST["is_finished"]
+                if finished=='on':
+                    finished= True
+                else:
+                    finished=False
+            except:
+
+                    finished=False
+            todo=Todo(user=request.user,title=request.POST['title'],is_finished=finished)
+            todo.save()
+    else:
+        form=Todoform()
+    todos=Todo.objects.filter(user=request.user)
+    if len(todos)==0:
+        todos_done=True
+    else :
+        todos_done=False
     context={
         'form':form,
-        'todos':todo
+        'todos':todos,
+        'todos_done':todos_done
+
     }
     return render(request,"dashboard/todo.html",context)
-           
+def todo_delete(request,pk=None):  
 
+     Todo.objects.get(id=pk).delete()
+     return redirect("todo")
+def todo_update(request,pk=None):  
+
+    todo=Todo.objects.get(id=pk)
+    if todo.is_finished==True:
+        todo.is_finished=False
+    else:
+        todo.is_finished=True
+    
+    return redirect("todo")
+
+           
+def book(request):
+    if request.method=="POST":
+        form=Dashform(request.POST)
+        text=request.POST['text']
+
+        url="https://www.googleapis.com/books/v1/volumes?q="+text
+        r=requests.get(url)
+        answer=r.json()
+        result_list=[]
+        for i in range(10):
+            result_dict={
+               
+                'title':answer['items'][i]['volumeInfo']['title'],
+                'subtitle':answer['items'][i]['volumeInfo'].get('subtitle'),
+                'description':answer['items'][i]['volumeInfo'].get('description'),
+                'count':answer['items'][i]['volumeInfo'].get('PageCount'),
+                'catagories':answer['items'][i]['volumeInfo'].get('catagories'),
+                'rating':answer['items'][i]['volumeInfo'].get('pageRating'),
+                'thumbnail':answer['items'][i]['volumeInfo'].get('imageLinks').get('thumbnail'),
+                'preview':answer['items'][i]['volumeInfo'].get('previewLink'),
+            }
+           
+            result_list.append(result_dict)
+            context={
+                'form':form,   
+                'results':result_list
+            }
+        
+
+        return render(request,"dashboard/books.html",context)
+
+    else:
+        form=Dashform()
+    context={'form':form}
+    return render(request,"dashboard/books.html",context)
      
       
    
