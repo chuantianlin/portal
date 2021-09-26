@@ -1,8 +1,11 @@
 {% extends 'dashboard/base.html' %} 
 {% load static %} 
 {% block content %}
+
 <div class="container text-center">
     <form method="POST">
+        {% csrf_token %}
+        {{form}}
         <div class="form-group">
             <button href="" class="btn btn-outline-info" type="submit">
                 Select

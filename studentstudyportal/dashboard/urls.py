@@ -14,4 +14,7 @@ urlpatterns=[
     path('todo_delete/<int:pk>',views.todo_delete,name="todo_delete"),
     path('update_todo/<int:pk>',views.todo_update,name="update_todo"),
     path('books/',views.book,name="books"),
+    path('dictionary/',views.dictionary,name="dictionary"),
+    path('wiki/',views.wiki,name="wiki"),
+    path('conversion/',views.conversion,name="conversion"),
 ]
