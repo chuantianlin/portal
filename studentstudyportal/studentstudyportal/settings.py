@@ -128,3 +128,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL='/statics/'
 STATCFILES_DIRS=[BASE_DIR/"staitics"]
 CRISPY_TEMPLATE_PACK="bootstrap4"
+LOGIN_REDIRECT_URL='home'
+LOGIN_URL='login'
